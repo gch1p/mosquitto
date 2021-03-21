@@ -61,7 +61,11 @@ int handle__subscribe(struct mosquitto *context)
 		}
 	}
 	if(packet__read_uint16(&context->in_packet, &mid)) return MOSQ_ERR_MALFORMED_PACKET;
-	if(mid == 0) return MOSQ_ERR_MALFORMED_PACKET;
+	// zero packet identifier is against the spec,
+	// but polaris don't respect it it seems...
+	//
+	// so we're commenting it out as a workaround:
+	// if(mid == 0) return MOSQ_ERR_MALFORMED_PACKET;
 
 	if(context->protocol == mosq_p_mqtt5){
 		rc = property__read_all(CMD_SUBSCRIBE, &context->in_packet, &properties);
